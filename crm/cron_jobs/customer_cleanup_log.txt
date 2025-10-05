@@ -1,5 +1,0 @@
-Starting cleanup at 2025-10-05 11:13:45
-9 objects imported automatically (use -v 2 for details).
-
-Deleted 2 inactive customers.
-Cleanup finished at 2025-10-05 11:13:47

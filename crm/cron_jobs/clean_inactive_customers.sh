@@ -7,7 +7,7 @@ VENV_PATH="alx_backend_graphql_crm/venv"
 # Activate virtual environment
 source "$VENV_PATH/Scripts/activate"
 
-LOG_FILE="crm/cron_jobs/customer_cleanup_log.txt"
+LOG_FILE="crm/cron_jobs/customer_cleanup_crontab.txt"
 
 echo "Starting cleanup at $(date '+%Y-%m-%d %H:%M:%S')" >> "$LOG_FILE"
 
