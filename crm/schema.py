@@ -142,9 +142,30 @@ class Query(graphene.ObjectType):
     def resolve_all_orders(root, info):
         return Order.objects.all()
 
-
 class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
     bulk_create_customers = BulkCreateCustomers.Field()
     create_product = CreateProduct.Field()
     create_order = CreateOrder.Field()
+    update_low_stock_products = UpdateLowStockProducts.Field()  
+
+
+# === Add this new mutation ===
+class UpdateLowStockProducts(graphene.Mutation):
+    class Arguments:
+        pass
+
+    message = graphene.String()
+    updated_products = graphene.List(ProductType)
+
+    def mutate(self, info):
+        low_stock_products = Product.objects.filter(stock__lt=10)
+        updated_list = []
+
+        for product in low_stock_products:
+            product.stock += 10  # simulate restocking
+            product.save()
+            updated_list.append(product)
+
+        message = "Low stock products updated successfully."
+        return UpdateLowStockProducts(message=message, updated_products=updated_list)
