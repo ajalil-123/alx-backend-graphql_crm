@@ -1,7 +1,0 @@
-"0 2 * * 0", "alx-backend-graphql_crm/crm/cron_jobs/clean_inactive_customers.sh"
-
-Starting cleanup at 2025-10-05 11:26:24
-9 objects imported automatically (use -v 2 for details).
-
-Deleted 0 inactive customers.
-Cleanup finished at 2025-10-05 11:26:25

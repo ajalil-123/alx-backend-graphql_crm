@@ -3,38 +3,23 @@ from graphene_django import DjangoObjectType
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from .models import Customer, Product, Order
-from graphene_django.filter import DjangoFilterConnectionField
-from .filters import CustomerFilter, ProductFilter, OrderFilter
-from .filters import OrderFilter
 
 # ===== Types =====
 
 class CustomerType(DjangoObjectType):
     class Meta:
         model = Customer
-        filter_fields = {
-            "name": ["icontains", "istartswith"],
-            "email": ["icontains"],
-            "created_at": ["gte", "lte"],
-        }
-        interfaces = (graphene.relay.Node,)
+        fields = "__all__"
 
-# Add this interface to enable connection support
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
-        # Expose all fields
         fields = "__all__"
-        # Add Node interface if you want Relay-style connection
-        interfaces = (graphene.relay.Node,)
 
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
         fields = "__all__"
-         # Add Node interface if you want Relay-style connection
-        interfaces = (graphene.relay.Node,)
-        #filterset_class = OrderFilter
 
 
 # ===== Mutations =====
@@ -144,17 +129,10 @@ class CreateOrder(graphene.Mutation):
 # ===== Root Schema =====
 
 class Query(graphene.ObjectType):
-    # Existing list queries (still valid)
     all_customers = graphene.List(CustomerType)
     all_products = graphene.List(ProductType)
     all_orders = graphene.List(OrderType)
 
-    # New filter-enabled queries
-    filtered_customers = DjangoFilterConnectionField(CustomerType, filterset_class=CustomerFilter, order_by=graphene.String())
-    filtered_products = DjangoFilterConnectionField(ProductType, filterset_class=ProductFilter, order_by=graphene.String())
-    filtered_orders = DjangoFilterConnectionField(OrderType, filterset_class=OrderFilter, order_by=graphene.String())
-
-    # Resolvers for basic list queries
     def resolve_all_customers(root, info):
         return Customer.objects.all()
 
@@ -163,25 +141,6 @@ class Query(graphene.ObjectType):
 
     def resolve_all_orders(root, info):
         return Order.objects.all()
-
-    # Resolvers for new filterable fields
-    def resolve_filtered_customers(root, info, order_by=None, **kwargs):
-        qs = Customer.objects.all()
-        if order_by:
-            qs = qs.order_by(order_by)
-        return qs
-
-    def resolve_filtered_products(root, info, order_by=None, **kwargs):
-        qs = Product.objects.all()
-        if order_by:
-            qs = qs.order_by(order_by)
-        return qs
-
-    def resolve_filtered_orders(root, info, order_by=None, **kwargs):
-        qs = Order.objects.all().distinct()
-        if order_by:
-            qs = qs.order_by(order_by)
-        return qs
 
 
 class Mutation(graphene.ObjectType):
