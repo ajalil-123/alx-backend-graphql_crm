@@ -5,7 +5,7 @@ from django.db import transaction
 from .models import Customer, Product, Order
 from graphene_django.filter import DjangoFilterConnectionField
 from .filters import CustomerFilter, ProductFilter, OrderFilter
-
+from .filters import OrderFilter
 
 # ===== Types =====
 
@@ -18,16 +18,23 @@ class CustomerType(DjangoObjectType):
             "created_at": ["gte", "lte"],
         }
         interfaces = (graphene.relay.Node,)
-        
+
+# Add this interface to enable connection support
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
+        # Expose all fields
         fields = "__all__"
+        # Add Node interface if you want Relay-style connection
+        interfaces = (graphene.relay.Node,)
 
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
         fields = "__all__"
+         # Add Node interface if you want Relay-style connection
+        interfaces = (graphene.relay.Node,)
+        #filterset_class = OrderFilter
 
 
 # ===== Mutations =====
