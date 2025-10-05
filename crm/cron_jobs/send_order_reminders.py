@@ -1,23 +1,21 @@
 #!/usr/bin/env python
-
 import os
 import sys
 from datetime import datetime, timedelta
 
-# --- Add project root to sys.path ---
+# Add project root
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, PROJECT_ROOT)
 
-# --- Set Django settings module ---
+# Django settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "alx_backend_graphql_crm.settings")
-
 import django
 django.setup()
 
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 
-# --- GraphQL client setup ---
+# GraphQL client
 transport = RequestsHTTPTransport(
     url="http://127.0.0.1:8000/graphql",
     verify=True,
@@ -25,11 +23,9 @@ transport = RequestsHTTPTransport(
 )
 client = Client(transport=transport, fetch_schema_from_transport=True)
 
-# --- Compute date range for last 7 days ---
 today = datetime.today().date()
 one_week_ago = today - timedelta(days=7)
 
-# --- GraphQL query using correct filter names ---
 query = gql("""
 query GetRecentOrders($start: Date, $end: Date) {
   allOrders(filter: {orderDateGte: $start, orderDateLte: $end}) {
@@ -47,8 +43,7 @@ query GetRecentOrders($start: Date, $end: Date) {
 
 params = {"start": one_week_ago, "end": today}
 
-# --- Log results ---
-log_file = os.path.join(os.path.dirname(__file__), "order_reminders_log.txt")
+log_file = "/tmp/order_reminders_log.txt"  # ✅ Use this exact path
 
 try:
     result = client.execute(query, variable_values=params)
